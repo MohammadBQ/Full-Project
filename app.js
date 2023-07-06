@@ -5,7 +5,10 @@ const morgan = require("morgan");
 const app = express();
 const notFound = require("./middlewares/notFoundHandler");
 const errorHandler = require("./middlewares/errorHandler");
-const tempRoutes = require("./api/temp/temp.routes");
+const userRoutes = require("./api/User/user.routes")
+const categoryRoutes = require("./api/Category/category.routes")
+const ingredientRoutes = require("./api/Ingredient/ingredient.routes")
+const recipeRoutes = require("./api/Recipe/recipe.routes")
 const config = require("./config/keys");
 const passport = require("passport");
 const { localStrategy, jwtStrategy } = require("./middlewares/passport");
@@ -20,13 +23,16 @@ passport.use("local", localStrategy);
 passport.use(jwtStrategy);
 
 // Everything with the word temp is a placeholder that you'll change in accordance with your project
-app.use("/temp", tempRoutes);
-
+app.use("/user", userRoutes)
+app.use("/category", categoryRoutes)
+app.use("/ingredient", ingredientRoutes);
+app.use("/recipe", recipeRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(config.PORT, () => {
-  console.log(`The application is running on ${config.PORT}`);
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`App running on PORT:${PORT}`);
 });
 
 module.exports = app;

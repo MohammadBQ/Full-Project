@@ -11,4 +11,7 @@ if (!config.JWT_TOKEN_EXP) {
   console.log("missing env values!");
   process.exit(1);
 }
+
+
+
 module.exports = config;

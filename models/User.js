@@ -7,6 +7,8 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   confirmpassword: {type: String, required: true},
 
+  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }]
+
   // create relations in here and in the other model
 });
 

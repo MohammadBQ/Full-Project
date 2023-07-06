@@ -2,8 +2,9 @@ const { model, Schema } = require("mongoose");
 // Everything with the word temp is a placeholder that you'll change in accordance with your project
 
 const CategorySchema = new Schema({
-  username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  name: { type: String,  required: true },
+  
+  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }]
 
   // create relations in here and in the other model
 });
