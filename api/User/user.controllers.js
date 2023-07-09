@@ -44,9 +44,11 @@ exports.signin = async (req, res) => {
 };
 
 exports.signup = async (req, res, next) => {
-  // if (req.user.password !== req.user.confirmpassword) display error message
   try {
     const { password } = req.body;
+    if (password !== req.body.confirmpassword) {
+      return next({ message: "Password is not match" });
+    }
     req.body.password = await passhash(password);
     const newUser = await User.create(req.body);
     const token = generateToken(newUser);
