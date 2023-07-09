@@ -1,11 +1,11 @@
 const { model, Schema } = require("mongoose");
 
-const CategorySchema = new Schema({
+const IngredientSchema = new Schema({
   name: { type: String, unique: true, required: true },
-  ingredients: [
-    { type: Schema.Types.objectId, required: true, ref: "Ingredient" },
+  categories: [
+    { type: Schema.Types.objectId, required: true, ref: "Category" },
   ],
   recipes: [{ type: Schema.Types.objectId, required: true, ref: "Recipe" }],
 });
 
-module.exports = model("Category", CategorySchema);
+module.exports = model("Ingredient", IngredientSchema);

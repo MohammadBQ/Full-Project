@@ -19,7 +19,6 @@ app.use(passport.initialize());
 passport.use("local", localStrategy);
 passport.use(jwtStrategy);
 
-// Everything with the word temp is a placeholder that you'll change in accordance with your project
 app.use("/temp", tempRoutes);
 
 app.use(notFound);

@@ -42,7 +42,9 @@ exports.signin = async (req, res) => {
     return res.status(500).json(err.message);
   }
 };
+
 exports.signup = async (req, res, next) => {
+  // if (req.user.password !== req.user.confirmpassword) display error message
   try {
     const { password } = req.body;
     req.body.password = await passhash(password);
