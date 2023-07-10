@@ -6,6 +6,7 @@ const UserSchema = new Schema({
   email: { type: String },
   password: { type: String, required: true },
   confirmpassword: { type: String, required: true },
+  isStaff: { type: Boolean, default: false }
 });
 
 module.exports = model("User", UserSchema);
