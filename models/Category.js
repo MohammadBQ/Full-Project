@@ -5,9 +5,8 @@ const CategorySchema = new Schema({
   ingredients: [
     { type: Schema.Types.ObjectId, required: true, ref: "Ingredient" },
   ],
+  recipes: [{ type: Schema.Types.ObjectId, required: true, ref: "Recipe" }],
 
-  recipes: [{ type: Schema.Types.objectId, required: true, ref: "Recipe" }],
-  categoryimage: { type: String, required: true }, 
-
-
+  categoryimage: { type: String, required: true },
+});
 module.exports = model("Category", CategorySchema);

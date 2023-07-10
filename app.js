@@ -28,10 +28,6 @@ app.use("/ingredient", ingredientRoutes);
 app.use("/recipe", recipeRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
 
-
-
-
-
 app.use(notFound);
 app.use(errorHandler);
 

@@ -9,7 +9,7 @@ const {
 } = require("./user.controllers");
 const router = express.Router();
 const passport = require("passport");
-const upload = require("../../middlewares/uploader")
+const upload = require("../../middlewares/uploader");
 
 // Everything with the word temp is a placeholder that you'll change in accordance with your project
 
@@ -31,7 +31,11 @@ router.post(
   passport.authenticate("local", { session: false }),
   signin
 );
-router.post("/signup",  signup);
-router.delete("/:userId",passport.authenticate("jwt", { session: false }), deleteUser);
+router.post("/signup", signup);
+router.delete(
+  "/:userId",
+  passport.authenticate("jwt", { session: false }),
+  deleteUser
+);
 
 module.exports = router;

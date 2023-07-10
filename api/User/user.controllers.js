@@ -12,7 +12,7 @@ exports.fetchUser = async (userId, next) => {
     return next(error);
   }
 };
-cd 
+cd;
 exports.getUser = async (req, res, next) => {
   try {
     const users = await User.find().select("-__v -password");
@@ -21,7 +21,6 @@ exports.getUser = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 exports.getProfile = async (req, res, next) => {
   try {
@@ -57,10 +56,13 @@ exports.signin = async (req, res) => {
 
 exports.signup = async (req, res, next) => {
   try {
-
-    if (req.file) {
-      req.body.image = `${req.file.path.replace("\\", "/")}`;
+    console.log(req.body);
+    const { password } = req.body;
+    if (password !== req.body.confirmpassword) {
+      next({ message: "Password Is Not Match" });
     }
+    console.log(`This is the password ${password}`);
+    req.body.password = await passHash(password);
     const newUser = await User.create(req.body);
     const token = generateToken(newUser);
     res.status(201).json({ token });
@@ -71,8 +73,12 @@ exports.signup = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    if(!req.user._id.equals(req.foundUser._id)) return next({ status: 400, message: " You are not permitted to update the user" })
-       if (req.file) {
+    if (!req.user._id.equals(req.foundUser._id))
+      return next({
+        status: 400,
+        message: " You are not permitted to update the user",
+      });
+    if (req.file) {
       req.body.image = `${req.file.path.replace("\\", "/")}`;
     }
     await User.findByIdAndUpdate(req.user.id, req.body);
@@ -82,10 +88,10 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
-
 exports.deleteUser = async (req, res, next) => {
   try {
-    if(!req.user._id.equals(req.foundUser._id)) return next({ status: 400, message: "You cannot delete other users " })
+    if (!req.user._id.equals(req.foundUser._id))
+      return next({ status: 400, message: "You cannot delete other users " });
     await User.findByIdAndRemove({ _id: req.user.id });
     return res.status(204).end();
   } catch (error) {
