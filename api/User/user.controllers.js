@@ -12,7 +12,7 @@ exports.fetchUser = async (userId, next) => {
     return next(error);
   }
 };
-
+cd 
 exports.getUser = async (req, res, next) => {
   try {
     const users = await User.find().select("-__v -password");
@@ -56,8 +56,8 @@ exports.signin = async (req, res) => {
 };
 
 exports.signup = async (req, res, next) => {
-  // if (req.user.password !== req.user.confirmpassword) display error message
   try {
+
     if (req.file) {
       req.body.image = `${req.file.path.replace("\\", "/")}`;
     }
