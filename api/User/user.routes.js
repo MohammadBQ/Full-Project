@@ -29,8 +29,8 @@ router.post(
   passport.authenticate("local", { session: false }),
   signin
 );
-router.post("/signup",  signup);
+router.post("/signup", signup);
 
-router.delete("/:userId", deleteUser)
+router.delete("/:userId", deleteUser);
 
 module.exports = router;

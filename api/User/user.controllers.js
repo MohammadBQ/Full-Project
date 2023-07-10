@@ -44,10 +44,14 @@ exports.signin = async (req, res) => {
 };
 
 exports.signup = async (req, res, next) => {
-  // if (req.user.password !== req.user.confirmpassword) display error message
   try {
+    console.log(req.body);
     const { password } = req.body;
-    req.body.password = await passhash(password);
+    if (password !== req.body.confirmpassword) {
+      next({ message: "Password Is Not Match" });
+    }
+    console.log(`This is the password ${password}`);
+    req.body.password = await passHash(password);
     const newUser = await User.create(req.body);
     const token = generateToken(newUser);
     res.status(201).json({ token });
