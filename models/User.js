@@ -5,8 +5,10 @@ const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
   email: { type: String },
   password: { type: String, required: true },
-  confirmpassword: { type: String, required: true },
-  isStaff: { type: Boolean, default: false }
-});
 
+  confirmpassword: { type: String, required: true },
+
+  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
+  isStaff: { type: Boolean, default: false },
+});
 module.exports = model("User", UserSchema);
