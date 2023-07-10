@@ -22,12 +22,13 @@ app.use(passport.initialize());
 passport.use("local", localStrategy);
 passport.use(jwtStrategy);
 
-app.use(notFound);
-app.use(errorHandler);
 app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/ingredient", ingredientRoutes);
 app.use("/recipe", recipeRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
