@@ -9,6 +9,7 @@ const RecipeSchema = new Schema({
   categories: [
     { type: Schema.Types.objectId, required: true, ref: "Category" },
   ],
+  recipeimage: { type: String, required: true }
 });
 
 module.exports = model("Recipe", RecipeSchema);

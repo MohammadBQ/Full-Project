@@ -8,7 +8,7 @@ const UserSchema = new Schema({
 
   confirmpassword: {type: String, required: true},
 
-  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }]
+  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }]})
 
 
 module.exports = model("User", UserSchema);

@@ -8,6 +8,7 @@ const CategorySchema = new Schema({
     { type: Schema.Types.objectId, required: true, ref: "Ingredient" },
   ],
   recipes: [{ type: Schema.Types.objectId, required: true, ref: "Recipe" }],
+  categoryimage: { type: String, required: true }, 
 
 });
 
