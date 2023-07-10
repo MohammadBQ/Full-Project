@@ -12,7 +12,7 @@ exports.fetchUser = async (userId, next) => {
     return next(error);
   }
 };
-cd;
+
 exports.getUser = async (req, res, next) => {
   try {
     const users = await User.find().select("-__v -password");
@@ -57,17 +57,16 @@ exports.signin = async (req, res) => {
 exports.signup = async (req, res, next) => {
   try {
     console.log(req.body);
-    const { password } = req.body;
-    if (password !== req.body.confirmpassword) {
-      next({ message: "Password Is Not Match" });
+    const { password, confirmpassword } = req.body;
+    if (password !== confirmpassword) {
+      return next({ status: 400, message: "Password Is Not Match" });
     }
-    console.log(`This is the password ${password}`);
     req.body.password = await passHash(password);
     const newUser = await User.create(req.body);
     const token = generateToken(newUser);
     res.status(201).json({ token });
   } catch (error) {
-    return next({ status: 400, message: error.message });
+    return next(error);
   }
 };
 
