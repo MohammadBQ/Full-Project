@@ -6,6 +6,7 @@ const CategorySchema = new Schema({
     { type: Schema.Types.ObjectId, required: true, ref: "Ingredient" },
   ],
   recipes: [{ type: Schema.Types.ObjectId, required: true, ref: "Recipe" }],
-});
 
+  categoryimage: { type: String, required: true },
+});
 module.exports = model("Category", CategorySchema);
