@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
-
+const upload = require("../../middlewares/uploader");
 const Recipe = require("../../models/Recipe");
 
 const {
@@ -9,6 +9,7 @@ const {
     deleteRecipe,
     addRecipe,
     getMyRecipes,
+    updateRecipe,
   } = require("./recipe.controllers");
 
 
@@ -29,7 +30,11 @@ router.param("recipeId", async (req, res, next, recipeId) => {
   
   router.get("/", getRecipe);
   router.post("/", passport.authenticate("jwt", { session: false }), addRecipe);
-
+  router.put(
+    "/:recipeId",
+    passport.authenticate("jwt", { session: false }),upload.single("image"),
+    updateRecipe
+  );
   router.get("/my-recipes", passport.authenticate("jwt", { session: false }), getMyRecipes);
   router.delete("/delete/:recipeId", passport.authenticate("jwt", { session: false }), deleteRecipe)
 
