@@ -30,8 +30,8 @@ app.use("/media", express.static(path.join(__dirname, "media")));
 
 app.use(notFound);
 app.use(errorHandler);
-<<<<<<< HEAD
-=======
+
+
 app.use("/user", userRoutes)
 app.use("/category", categoryRoutes)
 app.use("/ingredient", ingredientRoutes);
@@ -40,8 +40,6 @@ app.use("/media", express.static(path.join(__dirname, "media")));
 
 
 
-
->>>>>>> 8aded2e (added uploader and update recipe)
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
