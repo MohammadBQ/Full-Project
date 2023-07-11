@@ -4,14 +4,21 @@ const passport = require("passport");
 
 
 const router = express.Router();
+
 const Category = require("../../models/Category");
 
 
 const {
     getAllCategories,
-    addCategory,
+    createCategory,
     addRecipeToCategory,
     getCategoriesByRecipe,
+    deleteCategory,
+    recipesByCategory,
+    addCategory,
+    getCategory,
+
+
 } = require("./category.controllers")
 
 
@@ -35,10 +42,27 @@ router.param("categoryId", async (req, res, next, categoryId) => {
 
 router.get("/", getAllCategories);
 
+router.get("/", getCategory);
+router.post(
+    "/",
+    passport.authenticate("jwt", { session: false }),
+    createCategory
+    );
+router.get(
+        "/:categoryId",
+      
+        recipesByCategory
+      );
 router.get("/:recipe/categories", getCategoriesByRecipe);
 
-router.post("/", passport.authenticate("jwt", { session: false }), addCategory);
+//router.post("/", passport.authenticate("jwt", { session: false }), addCategory);
 
 router.post("/:categoryId/:recipeId", addRecipeToCategory);
+router.delete(
+       "/:categoryId",
+       passport.authenticate("jwt", { session: false }),
+      deleteCategory
+    );
 
-module.exports = router;
+
+    module.exports = router;

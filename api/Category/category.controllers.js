@@ -11,21 +11,6 @@ exports.getAllCategories = async (req, res, next) => {
     }
   };
   
-  exports.addCategory = async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return res
-          .status(403)
-          .json({ error: "You need to be signed in to add a category!" });
-        // 403 = Forbidden
-      }
-      const category = await Category.create(req.body);
-      res.status(201).json(category);
-      next(error);
-    } catch (error) {
-      next(error);
-    }
-  };
   
   exports.addRecipeToCategory = async (req, res, next) => {
     try {
@@ -63,4 +48,45 @@ exports.getAllCategories = async (req, res, next) => {
       next(error);
     }
   };
+  exports.getCategory = async (req, res, next) => {
+    try {
+      const categories = await Category.find()
+        .select("-__v")
+        .populate("recipes", "name");
+      return res.status(200).json(categories);
+    } catch (error) {
+      return next({ status: 400, message: error.message });
+    }
+  };
   
+  exports.createCategory = async (req, res, next) => {
+    try {
+      req.body.addedBy = req.user._id;
+      const newCategory = await Category.create(req.body);
+      return res.status(201).json(newCategory);
+    } catch (error) {
+      return next({ status: 400, message: error.message });
+    }
+  };
+  exports.recipesByCategory = async (req, res, next) => {
+    try {
+      const category = req.category;
+  
+      const recipes = await Recipe.find({ categories: category }).populate(
+        "categories"
+      );
+  
+      res.status(200).json(recipes);
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  exports.deleteCategory = async (req, res, next) => {
+      try {
+        await req.category.deleteOne();
+         return res.status(204).end();
+       } catch (error) {
+        return next({ status: 400, message: error.message });
+       }
+     };
