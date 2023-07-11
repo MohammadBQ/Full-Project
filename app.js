@@ -12,7 +12,7 @@ const recipeRoutes = require("./api/Recipe/recipe.routes");
 const config = require("./config/keys");
 const passport = require("passport");
 const { localStrategy, jwtStrategy } = require("./middlewares/passport");
-
+const path = require("path");
 app.use(cors());
 connectDb();
 app.use(express.json());
@@ -26,10 +26,22 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/ingredient", ingredientRoutes);
 app.use("/recipe", recipeRoutes);
-//app.use("/media", express.static(path.join(__dirname, "media")));
+app.use("/media", express.static(path.join(__dirname, "media")));
 
 app.use(notFound);
 app.use(errorHandler);
+<<<<<<< HEAD
+=======
+app.use("/user", userRoutes)
+app.use("/category", categoryRoutes)
+app.use("/ingredient", ingredientRoutes);
+app.use("/recipe", recipeRoutes);
+app.use("/media", express.static(path.join(__dirname, "media")));
+
+
+
+
+>>>>>>> 8aded2e (added uploader and update recipe)
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
