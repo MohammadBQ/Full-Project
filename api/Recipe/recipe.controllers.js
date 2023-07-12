@@ -1,6 +1,6 @@
 const Recipe = require("../../models/Recipe");
 const Category = require("../../models/Category");
-const User = require("../../models/User");
+const Ingredient = require("../../models/Ingredient")
 
 
 exports.fetchRecipe = async (recipeId, next) => {
@@ -23,91 +23,112 @@ exports.fetchRecipe = async (recipeId, next) => {
       
     }
   };
-
-
-  exports.getRecipe = async (req, res, next) => {
+  exports.createRecipe = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-      console.log(req.user.recipes);
+      req.body.author = req.user._id;
+      if (req.file) {
+        req.body.image = `${req.file.path.replace("\\", "/")}`;
+      }
+      if (!req.body.image)
+        return next({ status: 400, message: "no image was uploaded!" });
   
-      const recipes = await User.findById(req.user._id)
-        .select("_id username recipes")
-        .populate({
-          path: "recipes",
-          populate: { path: "category", select: "name" },
-          select: "-user",
+      if (req.body.image.length < 5) {
+        req.body.image = "media/defaultImage.png";
+      }
+      const { categories, ingredients, ...recipeData } = req.body;
+  
+      const newRecipe = await Recipe.create(recipeData);
+  
+      await req.user.updateOne({ $push: { recipes: newRecipe._id } });
+      if (Array.isArray(categories)) {
+        if (categories?.length > 0) {
+          for (let categoryName of categories) {
+            const foundCategory = await Category.findOneAndUpdate(
+              { name: categoryName.toLowerCase() },
+              { $addToSet: { recipes: newRecipe._id } },
+              { upsert: true, new: true }
+            );
+            await newRecipe.updateOne({
+              $push: { categories: foundCategory._id },
+            });
+          }
+        }
+      } else {
+        const foundCategory = await Category.findOneAndUpdate(
+          { name: categories.toLowerCase() },
+          { $addToSet: { recipes: newRecipe._id } },
+          { upsert: true, new: true }
+        );
+        await newRecipe.updateOne({
+          $push: { categories: foundCategory._id },
         });
-
-
-    const count = await Recipe.countDocuments();
-
-    return res.status(200).json({
-    recipes,
-    totalPages: Math.ceil(count / limit),
-    currentPage: page,
-  });
-} catch (error) {
-  return next(error);
-}
-};
-
-
-exports.getMyRecipes = async (req, res, next) => {
-    try {
-      const { page = 1, limit = 10 } = req.query;
-      console.log(req.user.recipes);
+      }
   
-      const recipes = await User.findById(req.user._id)
-        .select("_id username recipes")
-        .populate({
-          path: "recipes",
-          populate: { path: "category", select: "name" },
-          select: "-user",
+      if (Array.isArray(ingredients)) {
+        if (ingredients?.length > 0) {
+          for (let ingredientName of ingredients) {
+            const foundIngredient = await Ingredient.findOneAndUpdate(
+              { name: ingredientName.toLowerCase() },
+              { $addToSet: { recipes: newRecipe._id } },
+              { upsert: true, new: true }
+            );
+            await newRecipe.updateOne({
+              $push: { ingredients: foundIngredient._id },
+            });
+          }
+        }
+      } else {
+        const foundIngredient = await Ingredient.findOneAndUpdate(
+          { name: ingredients.toLowerCase() },
+          { $addToSet: { recipes: newRecipe._id } },
+          { upsert: true, new: true }
+        );
+        await newRecipe.updateOne({
+          $push: { ingredients: foundIngredient._id },
         });
-     
-      const count = await Recipe.countDocuments();
+      }
   
-      if (recipes.length <= 0)
-        return res.status(200).json({ message: "There are no recipes to view" });
-  
-      return res.status(200).json({
-        recipes,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-      });
+      return res.status(201).json(newRecipe);
     } catch (error) {
-      return next(error);
+      return next({ status: 400, message: error.message });
     }
-};
-
-
-
-exports.deleteRecipe = async (req, res, next) => {
-    try {
-      if (!req.user._id.equals(req.recipe.userId._id))
-        return next({ status: 401, message: "You can not delete other persons recipe" });
-  
-      await req.review.deleteOne();
-      return res.status(204).end();
-    } catch (error) {
-      return next(error);
-    }git 
   };
-  
+
+  exports.getRecipes = async (req, res, next) => {
+    try {
+      const recipes = await Recipe.find()
+        .select("-__v")
+        .populate("creator", "username image");
+      return res.status(200).json(recipes);
+    } catch (error) {
+      return next({ status: 400, message: error.message });
+    }
+  };
+
+  exports.getRecipeById = async (req, res, next) => {
+    try {
+      const recipes = await Recipe.findOne({ _id: req.recipe._id })
+        .select("-__v")
+        .populate("categories ingredients", "name");
+      return res.status(200).json(recipes);
+    } catch (error) {
+      return next({ status: 400, message: error.message });
+    }
+  };
   exports.updateRecipe = async (req, res, next) => {
     try {
-      if (!req.user._id.equals(req.recipe.creator)) {
+      if (!req.user._id.equals(req.recipe.author)) {
         return next({
           status: 400,
-          message: "You can't update the recipe",
+          message: "You don't have the permission to perform this task!",
         });
       }
       if (req.file) {
-        req.body.recipeimage = `${req.file.path.replace("\\", "/")}`;
+        req.body.image = `${req.file.path.replace("\\", "/")}`;
       }
   
       if (!req.body.image)
-        return next({ status: 400, message: "No image is added to the recipe" });
+        return next({ status: 400, message: "no image was uploaded!" });
   
       if (req.body.image?.length < 5) {
         req.body.image = "media/defaultImage.png";
@@ -142,7 +163,7 @@ exports.deleteRecipe = async (req, res, next) => {
   
       const categoryUpdates = [];
       const ingredientUpdates = [];
-      
+      // Add new categories and ingredients to recipe and recipe to category and ingredient
       for (let categoryName of categoriesToAdd) {
         categoryUpdates.push(
           Category.findOneAndUpdate(
@@ -166,7 +187,7 @@ exports.deleteRecipe = async (req, res, next) => {
       const addedCategories = await Promise.all(categoryUpdates);
       const addedIngredients = await Promise.all(ingredientUpdates);
   
-      
+      // Add new categories and ingredients to recipe
       const newCategoriesIds = addedCategories.map((category) => category._id);
       const newIngredientsIds = addedIngredients.map(
         (ingredient) => ingredient._id
@@ -214,4 +235,20 @@ exports.deleteRecipe = async (req, res, next) => {
       return next({ status: 400, message: error.message });
     }
   };
+  
+  
+
+
+exports.deleteRecipe = async (req, res, next) => {
+    try {
+      if (!req.user._id.equals(req.recipe.userId._id))
+        return next({ status: 401, message: "You can not delete other persons recipe" });
+  
+      await req.review.deleteOne();
+      return res.status(204).end();
+    } catch (error) {
+      return next(error);
+    }git 
+  };
+  
   

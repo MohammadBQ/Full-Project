@@ -22,17 +22,15 @@ app.use(passport.initialize());
 passport.use("local", localStrategy);
 passport.use(jwtStrategy);
 
-app.use("/user", userRoutes);
-app.use("/category", categoryRoutes);
-app.use("/ingredient", ingredientRoutes);
-app.use("/recipe", recipeRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
+app.use("/users", userRoutes);
+app.use("/recipes", recipeRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/ingredients", ingredientRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler);
-
-
-
 
 
 
